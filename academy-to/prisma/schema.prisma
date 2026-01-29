@@ -1,0 +1,290 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PERSONAL
+  STUDENT
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PENDING
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  phone         String?
+  avatar        String?
+  role          UserRole
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  personal         Personal?
+  student          Student?
+  sentMessages     Message[]  @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
+}
+
+model Personal {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio          String?
+  specialties  String[]
+  inviteCode   String   @unique @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  students     Student[]
+  workouts     Workout[]
+  exercises    Exercise[]
+  plans        Plan[]
+}
+
+model Student {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personalId      String
+  personal        Personal @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  birthDate       DateTime?
+  gender          String?
+  height          Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  anamnesis       Anamnesis?
+  measurements    Measurement[]
+  subscriptions   Subscription[]
+  workoutSessions WorkoutSession[]
+  photos          Photo[]
+  feedbacks       Feedback[]
+  workoutQueue    WorkoutQueue?
+}
+
+model Anamnesis {
+  id                String   @id @default(cuid())
+  studentId         String   @unique
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  objectives        String?
+  healthConditions  String?
+  injuries          String?
+  medications       String?
+  activityLevel     String?
+  sleepQuality      String?
+  nutrition         String?
+  observations      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Measurement {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  weight      Float?
+  bodyFat     Float?
+  chest       Float?
+  waist       Float?
+  hips        Float?
+  leftArm     Float?
+  rightArm    Float?
+  leftThigh   Float?
+  rightThigh  Float?
+  leftCalf    Float?
+  rightCalf   Float?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+model Plan {
+  id            String   @id @default(cuid())
+  personalId    String
+  personal      Personal @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  durationMonths Int
+  price         Float
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  studentId   String
+  student     Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        Plan               @relation(fields: [planId], references: [id])
+  status      SubscriptionStatus @default(PENDING)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  payments    Payment[]
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  amount         Float
+  status         PaymentStatus @default(PENDING)
+  paymentMethod  String?
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+}
+
+model Exercise {
+  id           String   @id @default(cuid())
+  personalId   String
+  personal     Personal @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  name         String
+  muscleGroup  String
+  description  String?
+  videoUrl     String?
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workoutExercises WorkoutExercise[]
+}
+
+model Workout {
+  id           String   @id @default(cuid())
+  personalId   String
+  personal     Personal @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  type         String
+  muscleGroups String[]
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  exercises       WorkoutExercise[]
+  sessions        WorkoutSession[]
+  queueItems      WorkoutQueueItem[]
+}
+
+model WorkoutExercise {
+  id          String   @id @default(cuid())
+  workoutId   String
+  workout     Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sets        Int
+  reps        String
+  restSeconds Int?
+  notes       String?
+  order       Int
+  createdAt   DateTime @default(now())
+
+  sessionExercises SessionExercise[]
+}
+
+model WorkoutQueue {
+  id         String   @id @default(cuid())
+  studentId  String   @unique
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  currentIndex Int    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  items      WorkoutQueueItem[]
+}
+
+model WorkoutQueueItem {
+  id         String       @id @default(cuid())
+  queueId    String
+  queue      WorkoutQueue @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  workoutId  String
+  workout    Workout      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  order      Int
+  createdAt  DateTime     @default(now())
+}
+
+model WorkoutSession {
+  id          String    @id @default(cuid())
+  studentId   String
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  workoutId   String
+  workout     Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+
+  exercises   SessionExercise[]
+}
+
+model SessionExercise {
+  id                String          @id @default(cuid())
+  sessionId         String
+  session           WorkoutSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  workoutExerciseId String
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+  setsCompleted     Int?
+  repsPerSet        String?
+  weight            Float?
+  notes             String?
+  completedAt       DateTime?
+  createdAt         DateTime        @default(now())
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  url         String
+  type        String?
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  sessionId   String?
+  type        String
+  content     String
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content     String
+  mediaUrl    String?
+  mediaType   String?
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([senderId, receiverId])
+}
