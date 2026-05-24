@@ -34,12 +34,12 @@ async function getDashboardData(personalId: string) {
     })
   ])
 
-  const monthlyRevenue = subscriptions.reduce((acc, sub) => {
+  const monthlyRevenue = subscriptions.reduce((acc: number, sub: { plan: { price: number; durationMonths: number } }) => {
     return acc + (sub.plan.price / sub.plan.durationMonths)
   }, 0)
 
-  const activeStudents = students.filter(s => 
-    s.subscriptions.some(sub => sub.status === "ACTIVE")
+  const activeStudents = students.filter((s: { subscriptions: { status: string }[] }) => 
+    s.subscriptions.some((sub: { status: string }) => sub.status === "ACTIVE")
   ).length
 
   return {
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
               </p>
             ) : (
               <div className="space-y-4">
-                {data.students.slice(0, 5).map((student) => (
+                {data.students.slice(0, 5).map((student: { id: string; user: { name: string; email: string }; subscriptions: any[] }) => (
                   <Link
                     key={student.id}
                     href={`/dashboard/alunos/${student.id}`}
@@ -215,16 +215,16 @@ export default async function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {data.students.filter(s => s.workoutSessions.length > 0).length === 0 ? (
+            {data.students.filter((s: { workoutSessions: any[] }) => s.workoutSessions.length > 0).length === 0 ? (
               <p className="text-[#a1a1aa] text-center py-8">
                 Nenhuma atividade registrada ainda
               </p>
             ) : (
               <div className="space-y-4">
                 {data.students
-                  .filter(s => s.workoutSessions.length > 0)
+                  .filter((s: { workoutSessions: any[] }) => s.workoutSessions.length > 0)
                   .slice(0, 5)
-                  .map((student) => (
+                  .map((student: { id: string; user: { name: string }; workoutSessions: { createdAt: Date }[] }) => (
                     <div
                       key={student.id}
                       className="flex items-center gap-3 p-3 rounded-lg bg-[#2a2a2a]"

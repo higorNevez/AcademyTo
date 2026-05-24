@@ -10,6 +10,7 @@ declare module 'next-auth' {
       role: UserRole
       personalId: string | null
       studentId: string | null
+      image?: string | null
     }
   }
 
@@ -20,6 +21,7 @@ declare module 'next-auth' {
     role: UserRole
     personalId: string | null
     studentId: string | null
+    image?: string | null
   }
 }
 

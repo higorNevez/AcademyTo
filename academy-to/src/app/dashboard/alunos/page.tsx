@@ -70,7 +70,7 @@ export default async function AlunosPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {students.map((student) => {
+          {students.map((student: { id: string; subscriptions: any[]; workoutSessions: { id: string; createdAt: Date; studentId: string; notes: string | null; workoutId: string; startedAt: Date; completedAt: Date | null }[]; workoutQueue?: { currentIndex: number; items: any[] } | null; user: { name: string; email: string; phone: string | null } }) => {
             const hasActiveSubscription = student.subscriptions.length > 0
             const lastWorkout = student.workoutSessions[0]
             const queueProgress = student.workoutQueue

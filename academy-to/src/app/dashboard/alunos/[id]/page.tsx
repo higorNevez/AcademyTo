@@ -91,9 +91,9 @@ export default async function StudentDetailPage({
     notFound()
   }
 
-  const activeSubscription = student.subscriptions.find(s => s.status === "ACTIVE")
+  const activeSubscription = student.subscriptions.find((s: { status: string }) => s.status === "ACTIVE")
   const totalWorkouts = student.workoutSessions.length
-  const completedWorkouts = student.workoutSessions.filter(s => s.completedAt).length
+  const completedWorkouts = student.workoutSessions.filter((s: { completedAt?: Date | null }) => s.completedAt).length
   const queueProgress = student.workoutQueue
     ? Math.round((student.workoutQueue.currentIndex / Math.max(student.workoutQueue.items.length, 1)) * 100)
     : 0
@@ -234,7 +234,7 @@ export default async function StudentDetailPage({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {student.workoutQueue.items.map((item, index) => (
+                  {student.workoutQueue.items.map((item: { id: string; workout: { name: string; type: string } }, index: number) => (
                     <div
                       key={item.id}
                       className={`flex items-center gap-3 p-3 rounded-lg ${
@@ -347,7 +347,7 @@ export default async function StudentDetailPage({
                       </tr>
                     </thead>
                     <tbody>
-                      {student.measurements.map((measurement) => (
+                      {student.measurements.map((measurement: { id: string; date: Date; weight: number | null; bodyFat: number | null; waist: number | null }) => (
                         <tr key={measurement.id} className="border-b border-[#3a3a3a]/50">
                           <td className="py-3 text-white">
                             {new Date(measurement.date).toLocaleDateString('pt-BR')}
@@ -384,7 +384,7 @@ export default async function StudentDetailPage({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {student.workoutSessions.map((session) => (
+                  {student.workoutSessions.map((session: { id: string; completedAt?: Date | null; startedAt: Date; workout: { name: string } }) => (
                     <div
                       key={session.id}
                       className="flex items-center justify-between p-4 bg-[#2a2a2a] rounded-lg"

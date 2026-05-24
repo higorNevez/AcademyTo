@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.3.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.3.0",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",

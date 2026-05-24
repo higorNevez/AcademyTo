@@ -3,8 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
 }
 
 enum UserRole {
@@ -48,7 +47,7 @@ model Personal {
   userId       String   @unique
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio          String?
-  specialties  String[]
+  specialties  Json?
   inviteCode   String   @unique @default(cuid())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -178,7 +177,7 @@ model Workout {
   name         String
   description  String?
   type         String
-  muscleGroups String[]
+  muscleGroups Json?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
