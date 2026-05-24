@@ -3,17 +3,18 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.personalId) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
+  const { id } = await params
   const body = await request.json()
   const { name, muscleGroup, description, videoUrl, imageUrl } = body
 
   const updated = await prisma.exercise.updateMany({
-    where: { id: params.id, personalId: session.user.personalId },
+    where: { id, personalId: session.user.personalId },
     data: { name, muscleGroup, description, videoUrl, imageUrl }
   })
 
@@ -24,14 +25,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   return NextResponse.json({ success: true })
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.personalId) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
+  const { id } = await params
   const deleted = await prisma.exercise.deleteMany({
-    where: { id: params.id, personalId: session.user.personalId }
+    where: { id, personalId: session.user.personalId }
   })
 
   if (deleted.count === 0) {
