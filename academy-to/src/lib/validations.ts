@@ -71,13 +71,18 @@ export const planSchema = z.object({
 })
 
 export const measurementSchema = z.object({
+  height: z.number().optional(),
   weight: z.number().optional(),
   bodyFat: z.number().optional(),
+  shoulders: z.number().optional(),
+  back: z.number().optional(),
   chest: z.number().optional(),
   waist: z.number().optional(),
   hips: z.number().optional(),
   leftArm: z.number().optional(),
   rightArm: z.number().optional(),
+  leftForearm: z.number().optional(),
+  rightForearm: z.number().optional(),
   leftThigh: z.number().optional(),
   rightThigh: z.number().optional(),
   leftCalf: z.number().optional(),

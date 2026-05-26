@@ -11,6 +11,12 @@ async function getStudentData(studentId: string) {
     where: { id: studentId },
     include: {
       user: true,
+      personal: {
+        select: {
+          user: { select: { name: true } },
+          inviteCode: true,
+        }
+      },
       subscriptions: {
         where: { status: "ACTIVE" },
         include: { plan: true }
@@ -58,14 +64,32 @@ export default async function AppPage() {
         <p className="text-[#a1a1aa]">Bem-vindo de volta, {student.user.name}</p>
       </div>
 
+      {student.personal && (
+        <Card className="border-[#3a3a3a] bg-[#2a2a2a]">
+          <CardContent className="space-y-2">
+            <p className="text-sm text-[#a1a1aa]">Personal atual</p>
+            <p className="text-white font-medium">{student.personal.user.name}</p>
+            <p className="text-xs text-[#a1a1aa]">Código: {student.personal.inviteCode}</p>
+            <Link href="/app/configuracoes" className="text-sm text-[#7c3aed] hover:underline">
+              Trocar de personal ou escolher plano
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
       {!hasActiveSubscription && (
         <Card className="bg-red-500/10 border-red-500/30">
-          <CardContent className="p-4 flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
-            <div>
-              <p className="text-sm text-red-500 font-medium">Sem plano ativo</p>
-              <p className="text-xs text-[#a1a1aa]">Entre em contato com seu personal trainer</p>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-red-500 font-medium">Sem plano ativo</p>
+                <p className="text-xs text-[#a1a1aa]">Escolha um plano para liberar seus treinos.</p>
+              </div>
             </div>
+            <Link href="/app/planos" className="inline-flex items-center justify-center rounded-lg bg-[#7c3aed] px-4 py-2 text-sm font-medium text-white hover:bg-[#6d28d9]">
+              Escolher plano
+            </Link>
           </CardContent>
         </Card>
       )}

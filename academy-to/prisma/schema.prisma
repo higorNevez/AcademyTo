@@ -101,11 +101,16 @@ model Measurement {
   student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   weight      Float?
   bodyFat     Float?
+  height      Float?
+  shoulders   Float?
+  back        Float?
   chest       Float?
   waist       Float?
   hips        Float?
   leftArm     Float?
   rightArm    Float?
+  leftForearm Float?
+  rightForearm Float?
   leftThigh   Float?
   rightThigh  Float?
   leftCalf    Float?

@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import AssignWorkoutsDialog from "@/components/personal/AssignWorkoutsDialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import {
@@ -222,7 +223,7 @@ export default async function StudentDetailPage({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Fila de Treinos</CardTitle>
-                <Button size="sm">Editar fila</Button>
+                <AssignWorkoutsDialog studentId={student.id} triggerLabel="Editar fila" />
               </div>
             </CardHeader>
             <CardContent>
@@ -230,7 +231,9 @@ export default async function StudentDetailPage({
                 <div className="text-center py-8">
                   <ClipboardList className="h-12 w-12 text-[#a1a1aa] mx-auto mb-4" />
                   <p className="text-[#a1a1aa]">Nenhum treino na fila</p>
-                  <Button className="mt-4" size="sm">Adicionar treinos</Button>
+                  <div className="mt-4 flex justify-center">
+                    <AssignWorkoutsDialog studentId={student.id} triggerLabel="Adicionar treinos" />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-2">

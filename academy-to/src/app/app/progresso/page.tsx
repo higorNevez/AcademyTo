@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Zap, Calendar } from "lucide-react"
+import AnamnesisForm from "@/components/student/AnamnesisForm"
+import MeasurementForm from "@/components/student/MeasurementForm"
 
 async function getStudentProgress(studentId: string) {
   const student = await prisma.student.findUnique({
@@ -17,6 +19,7 @@ async function getStudentProgress(studentId: string) {
         include: { items: true }
       },
       workoutSessions: true,
+      anamnesis: true,
       measurements: {
         orderBy: { date: "desc" }
       }
@@ -153,6 +156,11 @@ export default async function ProgressoPage() {
           </div>
         </>
       )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AnamnesisForm initialData={student.anamnesis ?? undefined} />
+          <MeasurementForm />
+        </div>
 
       {student.measurements.length > 0 && (
         <Card>

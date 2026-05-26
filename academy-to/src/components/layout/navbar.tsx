@@ -67,7 +67,7 @@ export function Navbar() {
             <span className="text-xl font-bold text-white">AcademyTo</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 flex-1 justify-center flex-wrap">
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -89,7 +89,7 @@ export function Navbar() {
             })}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 ml-4">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={session?.user?.image || undefined} />
@@ -101,11 +101,12 @@ export function Navbar() {
             </div>
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={() => signOut({ callbackUrl: "/" })}
               className="text-white hover:bg-white/10"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-4 w-4 mr-2" />
+              Sair
             </Button>
           </div>
 
